@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebMCP Tool Generator | Himat Technology</title>
+  <meta name="description" content="Generate browser WebMCP tool definitions from any website for AI agents. Built by Himat Technology.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+  <nav class="top-nav">
+    <div class="nav-container">
+      <a href="https://himat.co.in" target="_blank" rel="noopener noreferrer" class="nav-brand">
+        <span class="brand-sparkle">✨</span>
+        <span class="brand-text">Himat <span class="brand-highlight">Technology</span></span>
+      </a>
+      <div class="nav-links">
+        <a href="https://himat.tech/free-tools/webmcp-tool-generator" target="_blank" rel="noopener noreferrer" class="nav-pill pill-demo">
+          <span class="pill-pulse"></span>
+          <span>🚀 Live Demo</span>
+        </a>
+        <a href="https://himat.co.in" target="_blank" rel="noopener noreferrer" class="nav-link">
+          🌐 himat.co.in
+        </a>
+        <a href="mailto:info@himat.co.in" class="nav-link">
+          ✉️ Support
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="app-container">
+    <!-- Hero Section -->
+    <header class="hero">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        <span>WebMCP Protocol v1.0 &bull; Browser AI Agent Suite</span>
+      </div>
+      <h1 class="hero-title">
+        WebMCP <span class="gradient-text">Tool Generator</span>
+      </h1>
+      <p class="hero-subtitle">
+        Inspect any webpage to detect forms, buttons, dropdowns, and navigation, then automatically generate browser WebMCP tool definitions for AI agents.
+      </p>
+    </header>
+
+    <!-- URL Input & Control Card -->
+    <main class="main-content">
+      <section class="generator-box">
+        <form id="url-form" class="url-form">
+          <div class="input-group">
+            <span class="input-icon">🔍</span>
+            <input 
+              type="text" 
+              id="url-input" 
+              name="url" 
+              placeholder="Enter website URL (e.g. https://example.com, demo:store)" 
+              autocomplete="off" 
+              required
+            />
+            <button type="submit" id="generate-btn" class="btn btn-primary">
+              <span class="btn-text">Generate Tools</span>
+              <span class="btn-spinner" hidden></span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Quick Demo Presets -->
+        <div class="quick-presets">
+          <span class="preset-label">Quick try:</span>
+          <button type="button" class="preset-chip chip-store" data-url="demo:store">🛒 Demo Store</button>
+          <button type="button" class="preset-chip chip-contact" data-url="demo:contact">✉️ Demo Contact</button>
+          <button type="button" class="preset-chip chip-wiki" data-url="https://en.wikipedia.org/wiki/Main_Page">📚 Wikipedia</button>
+          <button type="button" class="preset-chip chip-hn" data-url="https://news.ycombinator.com">📰 Hacker News</button>
+        </div>
+      </section>
+
+      <!-- Status / Notification Alert Banner -->
+      <div id="alert-box" class="alert-box" hidden>
+        <span class="alert-icon" id="alert-icon">⚠️</span>
+        <div class="alert-content">
+          <div class="alert-title" id="alert-title"></div>
+          <div class="alert-message" id="alert-message"></div>
+        </div>
+        <button type="button" id="alert-close" class="alert-close" aria-label="Close alert">&times;</button>
+      </div>
+
+      <!-- Loading State Skeleton -->
+      <div id="loading-state" class="loading-state" hidden>
+        <div class="spinner-large"></div>
+        <h3 class="loading-title" id="loading-title">Analyzing Webpage & Generating Tools...</h3>
+        <p class="loading-desc" id="loading-desc">Fetching HTML, inspecting interactive components, and creating typed WebMCP schemas.</p>
+      </div>
+
+      <!-- Results Container -->
+      <section id="results-section" class="results-section" hidden>
+        <!-- Results Summary Bar -->
+        <div class="results-header">
+          <div class="results-info">
+            <h2 id="result-page-title" class="result-page-title">Website Title</h2>
+            <div class="result-url-wrap">
+              <a id="result-page-url" class="result-page-url" href="#" target="_blank" rel="noopener noreferrer">https://example.com</a>
+            </div>
+          </div>
+          <div class="metrics-bar">
+            <div class="metric-pill pill-total">
+              <span class="metric-num" id="count-total">0</span> Tools
+            </div>
+            <div class="metric-pill pill-read">
+              <span class="metric-num" id="count-read">0</span> read
+            </div>
+            <div class="metric-pill pill-write">
+              <span class="metric-num" id="count-write">0</span> write
+            </div>
+            <div class="metric-pill pill-danger">
+              <span class="metric-num" id="count-danger">0</span> danger
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs & Global Actions -->
+        <div class="view-tabs-bar">
+          <div class="tabs-group" role="tablist">
+            <button type="button" class="tab-btn active" data-tab="cards" id="tab-cards" role="tab" aria-selected="true">
+              📋 Tool Cards (<span id="tab-count-tools">0</span>)
+            </button>
+            <button type="button" class="tab-btn" data-tab="code" id="tab-code" role="tab" aria-selected="false">
+              ⚡ WebMCP JavaScript
+            </button>
+            <button type="button" class="tab-btn" data-tab="json" id="tab-json" role="tab" aria-selected="false">
+              { } JSON Schema
+            </button>
+          </div>
+
+          <div class="tab-actions">
+            <!-- Filter by safety in card view -->
+            <div class="filter-group" id="filter-group">
+              <label for="safety-filter" class="filter-label">Filter:</label>
+              <select id="safety-filter" class="filter-select">
+                <option value="all">All Types</option>
+                <option value="read">read</option>
+                <option value="write">write</option>
+                <option value="danger">danger</option>
+              </select>
+            </div>
+            <button type="button" id="copy-active-btn" class="btn btn-secondary">
+              <span class="btn-icon">📋</span> <span id="copy-btn-text">Copy All JS</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Tab 1: Cards View -->
+        <div id="view-cards" class="tab-panel active">
+          <div id="tools-list" class="tools-grid">
+            <!-- Tool Cards rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Tab 2: Full WebMCP JavaScript Code -->
+        <div id="view-code" class="tab-panel" hidden>
+          <div class="code-panel-header">
+            <span class="code-panel-lang">JavaScript (WebMCP Browser API)</span>
+            <button type="button" class="btn btn-sm btn-secondary copy-btn" data-copy-target="full-code-content">
+              Copy JavaScript
+            </button>
+          </div>
+          <pre class="code-block"><code id="full-code-content"></code></pre>
+        </div>
+
+        <!-- Tab 3: JSON Representation -->
+        <div id="view-json" class="tab-panel" hidden>
+          <div class="code-panel-header">
+            <span class="code-panel-lang">JSON (WebMCP Schema Definition)</span>
+            <button type="button" class="btn btn-sm btn-secondary copy-btn" data-copy-target="full-json-content">
+              Copy JSON
+            </button>
+          </div>
+          <pre class="code-block"><code id="full-json-content"></code></pre>
+        </div>
+      </section>
+    </main>
+
+    <!-- Colorful Company Footer -->
+    <footer class="app-footer">
+      <div class="footer-card">
+        <div class="footer-brand-row">
+          <div class="footer-brand-info">
+            <div class="footer-logo">
+              <span class="brand-sparkle">🚀</span>
+              <span class="brand-title">Himat Technology</span>
+            </div>
+            <p class="footer-desc">
+              Empowering AI agents and developers with intelligent browser automation tools and digital solutions.
+            </p>
+          </div>
+          <div class="footer-demo-callout">
+            <a href="https://himat.tech/free-tools/webmcp-tool-generator" target="_blank" rel="noopener noreferrer" class="btn-live-demo">
+              <span>🌟 Visit Hosted Live Demo</span>
+              <span class="arrow-icon">&rarr;</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Contact Pills Grid -->
+        <div class="footer-contact-grid">
+          <a href="tel:+919445234023" class="contact-card card-phone">
+            <span class="card-icon">📞</span>
+            <div class="card-text">
+              <span class="card-label">Direct Contact / WhatsApp</span>
+              <span class="card-val">+91 94452 34023</span>
+            </div>
+          </a>
+          <a href="mailto:info@himat.co.in" class="contact-card card-email">
+            <span class="card-icon">✉️</span>
+            <div class="card-text">
+              <span class="card-label">Official Email</span>
+              <span class="card-val">info@himat.co.in</span>
+            </div>
+          </a>
+          <a href="https://himat.co.in" target="_blank" rel="noopener noreferrer" class="contact-card card-web">
+            <span class="card-icon">🌐</span>
+            <div class="card-text">
+              <span class="card-label">Official Portal</span>
+              <span class="card-val">himat.co.in</span>
+            </div>
+          </a>
+        </div>
+
+        <!-- Social Media Badges -->
+        <div class="footer-social-row">
+          <span class="social-heading">Connect With Us:</span>
+          <div class="social-links-list">
+            <a href="https://www.linkedin.com/in/himat-technologies-14b1051b4" target="_blank" rel="noopener noreferrer" class="social-chip chip-linkedin">
+              <span class="social-icon">💼</span> LinkedIn
+            </a>
+            <a href="https://www.instagram.com/himat_technologies?stkn=djdmcGxweWtwYWI0" target="_blank" rel="noopener noreferrer" class="social-chip chip-instagram">
+              <span class="social-icon">📸</span> Instagram
+            </a>
+            <a href="https://www.facebook.com/people/Himat-technologies/61593829197445/" target="_blank" rel="noopener noreferrer" class="social-chip chip-facebook">
+              <span class="social-icon">👥</span> Facebook
+            </a>
+            <a href="https://github.com/himat-technology/webmcp-tool-generator" target="_blank" rel="noopener noreferrer" class="social-chip chip-github">
+              <span class="social-icon">⭐</span> GitHub
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-bottom-line">
+          <p>&copy; 2026 Himat Technology &bull; WebMCP Tool Generator &bull; Open Source under MIT License</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <span id="toast-icon">✓</span>
+    <span id="toast-msg">Copied to clipboard!</span>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

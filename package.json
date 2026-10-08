@@ -1,0 +1,23 @@
+{
+  "name": "webmcp-tool-generator",
+  "version": "1.0.0",
+  "description": "Simple WebMCP Tool Generator that inspects websites and generates browser WebMCP tool definitions",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "webmcp",
+    "model-context-protocol",
+    "ai-agent",
+    "tool-generator",
+    "browser-tools"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "express": "^4.21.2"
+  }
+}
